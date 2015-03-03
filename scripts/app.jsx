@@ -1,8 +1,7 @@
 'use strict';
 
 var React = require('react');
-window.React = React;
 
-var MyComponent = require('./components/mycomponent.jsx');
+var Watchdogr = require('./components/watchdogr.jsx');
 
-React.render(<MyComponent />, document.getElementById('content'));
+React.render(<Watchdogr />, document.getElementById('content'));
