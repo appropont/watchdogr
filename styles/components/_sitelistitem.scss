@@ -1,0 +1,55 @@
+.site {
+	h3 {
+		margin: 0;
+	}
+
+	.panel-heading i {
+		vertical-align: bottom;
+	}
+
+	.detail {
+		float: left;
+		margin-right: 1rem;
+	}
+
+	.favicon {
+		margin: 5px;
+		max-height: 100%;
+		width: auto;
+	}
+
+	.status-icon-wrapper {
+		padding: 0;
+		text-align: center;
+	}
+
+	.site-status-icon {
+		padding-top: 50%;
+
+		@media screen and (min-width: 480px) {
+			padding-top: 10%;
+		}
+	}
+
+	.site-status-icon i {
+		font-size: 3rem;
+	}
+
+}
+
+.site-updating-icon {
+	animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+
+.site-up-icon {
+	
+}
+
+.site-down-icon {
+	
+}

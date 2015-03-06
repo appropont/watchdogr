@@ -1,30 +1,26 @@
 {
-  "name": "react-starterify",
-  "version": "0.0.8",
-  "description": "React JS application skeleton using Browserify and other awesome tools",
+  "name": "watchdogr",
+  "version": "0.0.1",
+  "description": "A simple app to monitor the status of web servers",
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Granze/react-starterify"
+    "url": "https://github.com/appropont/watchdogr"
   },
-  "keywords": [
-    "gulp",
-    "react",
-    "browserify",
-    "seed",
-    "boilerplate",
-    "kickstarter",
-    "ES6",
-    "6to5",
-    "babel"
-  ],
-  "author": "Maurizio Mangione",
+  "keywords": [],
+  "author": "Appropont",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Granze/react-starterify/issues"
+    "url": "https://github.com/appropont/watchdogr/issues"
   },
-  "homepage": "https://github.com/Granze/react-starterify",
-  "dependencies": {},
+  "homepage": "https://github.com/appropont/watchdogr",
+  "dependencies": {
+    "reflux": "~0.2.5",
+    "react": "^0.12.2",
+    "superagent": "^0.21.0",
+    "react-router": "~0.12.4",
+    "localforage": "~1.2.2"
+  },
   "devDependencies": {
     "babelify": "^5.0.3",
     "browser-sync": "^2.2.0",
@@ -38,8 +34,6 @@
     "gulp-sass": "^1.3.3",
     "gulp-sourcemaps": "^1.3.0",
     "gulp-uglify": "^1.1.0",
-    "react": "^0.12.2",
-    "superagent": "^0.21.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.3.0"

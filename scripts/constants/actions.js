@@ -1,0 +1,10 @@
+var actions = {
+
+	ADDSITE : 'ADDSITE',
+	SAVESITES : 'SAVESITES',
+	UPDATESETTINGS : 'UPDATESETTINGS',
+	SAVESETTINGS : 'SAVESETTINGS'
+
+};
+
+module.exports = actions;
