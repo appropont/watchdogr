@@ -4,6 +4,7 @@ var React = require('react'),
     SiteListItem = require('./sitelistitem.jsx'),
     siteStore = require('../stores/sites'),
     SiteActions = require('../actions/sites'),
+    Link = require('react-router').Link,
 
 SiteList = React.createClass({
     getInitialState: function() {
@@ -53,12 +54,12 @@ SiteList = React.createClass({
                 <div className="panel-heading list-group-item">
                     <div>
                         <h2 className="pull-left"><i className="fa fa-server"></i> Sites</h2>
-                        <a href="/#/add" className="btn btn-default">
+                        <Link to="add" className="btn btn-default">
                             <i className="fa fa-plus"></i> Add
-                        </a>
-                        <a href="/#/settings" className="btn btn-default pull-right">
+                        </Link>
+                        <Link to="settings" className="btn btn-default pull-right">
                             <i className="fa fa-cog"></i> Settings
-                        </a>
+                        </Link>
                     </div>
 
                 </div>

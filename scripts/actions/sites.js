@@ -6,7 +6,8 @@ var React = require('react'),
 var siteActions = Reflux.createActions([
 	'addSite',
 	'saveSites',
-	'loadSites'
+	'loadSites',
+	'removeSite'
 ]);
 
 module.exports = siteActions;
