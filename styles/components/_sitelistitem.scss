@@ -16,6 +16,20 @@
 		margin: 5px;
 		max-height: 100%;
 		width: auto;
+		display: inline;
+		display: inline-block;
+		vertical-align: initial;
+	}
+
+	.url {
+		display: inline;
+		display: inline-block;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		width: 85%;
+		@media (max-width: 480px) {
+			font-size: 20px;
+		}
 	}
 
 	.status-icon-wrapper {
@@ -24,10 +38,10 @@
 	}
 
 	.site-status-icon {
-		padding-top: 50%;
+		padding-top: 60%;
 
 		@media screen and (min-width: 480px) {
-			padding-top: 10%;
+			padding-top: 20%;
 		}
 	}
 

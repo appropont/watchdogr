@@ -29403,10 +29403,10 @@ var React = require("react"),
                 React.createElement(
                     "div",
                     { className: "full-width clearfix" },
-                    React.createElement("img", { src: favicon, className: "pull-left favicon" }),
+                    React.createElement("img", { src: favicon, className: "favicon" }),
                     React.createElement(
                         "h3",
-                        { className: "pull-left" },
+                        { className: "url" },
                         this.props.url
                     )
                 ),

@@ -92,8 +92,8 @@ SiteListItem = React.createClass({
                 </div>
                 <div className="col-xs-10 details">
                     <div className="full-width clearfix">
-                        <img src={favicon} className="pull-left favicon" />
-                        <h3 className="pull-left">{this.props.url}</h3>
+                        <img src={favicon} className="favicon" />
+                        <h3 className="url">{this.props.url}</h3>
                     </div>
                     <div className="full-width">
                         <div className="detail">Status: {this.state.status}</div> 
