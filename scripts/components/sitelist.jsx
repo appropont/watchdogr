@@ -14,8 +14,6 @@ SiteList = React.createClass({
 
         //return {sites: [{url: 'http://chrisgriffing.com', status: 'DOWN'}]};
     },
-    initialization : function() {
-    },
     onSitesChange : function(sites) {
         this.setState({
             sites: sites
@@ -36,7 +34,7 @@ SiteList = React.createClass({
         for(var i = 0; i < this.state.sites.length; i++) {
             var site = this.state.sites[i];
             listItems.push(
-                <SiteListItem key={site.url} url={site.url} status={site.status} />
+                <SiteListItem key={site.url} url={site.url} timer={site.timer} />
             );
         }
 

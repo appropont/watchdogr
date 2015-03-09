@@ -21,9 +21,7 @@ SiteListItem = React.createClass({
 
     componentDidMount : function() {
         //check the status of the site
-        this.updateStatus()
-
-        //initiate timer for next check
+        this.updateStatus();
     },
 
     updateStatus : function() {
@@ -31,29 +29,30 @@ SiteListItem = React.createClass({
         return new Promise(function(resolve, reject) {
 
             self.setState({status: 'UPDATING'});
-            try{
-                request('GET', self.props.url)
-                    .end(function(result) {
-                        console.log('result:', result);
-                        if(!result.status) {
-                            reject({error: 'Error: request did not return status'});
-                            return;
-                        }
+            request('GET', self.props.url)
+                .end(function(result) {
 
-                        var newState = {lastChecked: new Date().toISOString()};
-                        if(result.status === 200) {
-                            newState.status = 'OK';
-                        } else if(result.status >= 400 && result.status <= 600) {
-                            newState.status = 'DOWN';
-                        } else {
-                            newState.status = 'ERROR';
-                        }
-                        self.setState(newState);
+                    //initiate new timeout
+                    var timerMS = self.props.timer * 1000 * 60 * 60;
+                    setTimeout(self.updateStatus, timerMS);
 
-                    });
-            } catch(e) {
-                console.log('request error');
-            }
+                    //validate status
+                    if(!result.status) {
+                        reject({error: 'Error: request did not return status'});
+                        return;
+                    }
+
+                    //change state
+                    var newState = {lastChecked: new Date().toISOString()};
+                    if(result.status === 200) {
+                        newState.status = 'OK';
+                    } else if(result.status >= 400 && result.status <= 600) {
+                        newState.status = 'DOWN';
+                    } else {
+                        newState.status = 'ERROR';
+                    }
+                    self.setState(newState);
+                });
 
         });
     },

@@ -32279,7 +32279,6 @@ var React = require("react"),
 
         //return {sites: [{url: 'http://chrisgriffing.com', status: 'DOWN'}]};
     },
-    initialization: function initialization() {},
     onSitesChange: function onSitesChange(sites) {
         this.setState({
             sites: sites
@@ -32299,7 +32298,7 @@ var React = require("react"),
         //Create list items for sites
         for (var i = 0; i < this.state.sites.length; i++) {
             var site = this.state.sites[i];
-            listItems.push(React.createElement(SiteListItem, { key: site.url, url: site.url, status: site.status }));
+            listItems.push(React.createElement(SiteListItem, { key: site.url, url: site.url, timer: site.timer }));
         }
 
         //Add Error list item if no sites found
@@ -32382,27 +32381,26 @@ var React = require("react"),
         return new Promise(function (resolve, reject) {
 
             self.setState({ status: "UPDATING" });
-            try {
-                request("GET", self.props.url).end(function (result) {
-                    console.log("result:", result);
-                    if (!result.status) {
-                        reject({ error: "Error: request did not return status" });
-                        return;
-                    }
+            request("GET", self.props.url).end(function (result) {
+                console.log("result:", result);
+                if (!result.status) {
+                    reject({ error: "Error: request did not return status" });
+                    return;
+                }
 
-                    var newState = { lastChecked: new Date().toISOString() };
-                    if (result.status === 200) {
-                        newState.status = "OK";
-                    } else if (result.status >= 400 && result.status <= 600) {
-                        newState.status = "DOWN";
-                    } else {
-                        newState.status = "ERROR";
-                    }
-                    self.setState(newState);
-                });
-            } catch (e) {
-                console.log("request error");
-            }
+                var newState = { lastChecked: new Date().toISOString() };
+                if (result.status === 200) {
+                    newState.status = "OK";
+                } else if (result.status >= 400 && result.status <= 600) {
+                    newState.status = "DOWN";
+                } else {
+                    newState.status = "ERROR";
+                }
+                self.setState(newState);
+
+                var timerMS = self.props.timer * 1000 * 60 * 60;
+                setTimeout(self.updateStatus, timerMS);
+            });
         });
     },
 
