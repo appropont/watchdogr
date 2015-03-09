@@ -50,6 +50,12 @@ var SettingsStore = Reflux.createStore({
 		//but it makes sense for it to live in the same place that the settings are defined
 	sendEmailAlert : function(site) {
 		console.log('sendEmailAlert this.settings:', this.settings);
+
+		if(!this.settings.key || this.settings.key === '' || !this.settings.email || this.settings.email === '') {
+			console.log('no mailer settings. aborting sendEmailAlert');
+			return;
+		}
+
 		var requestData = {
             "key": this.settings.key,
             "message": {
