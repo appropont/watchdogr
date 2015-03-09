@@ -34443,7 +34443,7 @@ var React = require("react"),
 
         //validate fields
         var key = this.state.key;
-        if (key && key !== "" && !validator.isAlphanumeric(key)) {
+        if (key && key !== "" && !validator.isAscii(key)) {
             console.log("key fails validation");
             alert("API Key fails validation");
             return;
