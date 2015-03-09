@@ -34267,7 +34267,17 @@ module.exports = function(arr, fn, initial){
 
 });
 
-},{}],"/home/chris/watchdogr/scripts/actions/sites.js":[function(require,module,exports){
+},{}],"/home/chris/watchdogr/scripts/actions/settings.js":[function(require,module,exports){
+"use strict";
+
+var React = require("react"),
+    Reflux = require("reflux");
+
+var siteActions = Reflux.createActions(["updateSettings", "loadSettings"]);
+
+module.exports = siteActions;
+
+},{"react":"/home/chris/watchdogr/node_modules/react/react.js","reflux":"/home/chris/watchdogr/node_modules/reflux/index.js"}],"/home/chris/watchdogr/scripts/actions/sites.js":[function(require,module,exports){
 "use strict";
 
 var React = require("react"),
@@ -34400,19 +34410,70 @@ module.exports = AddSite;
 "use strict";
 
 var React = require("react"),
-    Link = require("react-router").Link,
+    Router = require("react-router"),
+    Link = Router.Link,
+    SettingsStore = require("../stores/settings"),
+    SettingsActions = require("../actions/settings"),
+    validator = require("validator"),
     Settings = React.createClass({
     displayName: "Settings",
 
     getInitialState: function getInitialState() {
-        return {};
+        return {
+            key: "",
+            email: ""
+        };
+    },
+
+    componentDidMount: function componentDidMount() {
+        this.unsubscribe = SettingsStore.listen(this.onSettingsChange);
+        SettingsActions.loadSettings();
+    },
+
+    componentWillUnmount: function componentWillUnmount() {
+        this.unsubscribe();
+    },
+
+    onSettingsChange: function onSettingsChange(settings) {
+        console.log("settings change: ", settings);
+        this.setState(settings);
     },
 
     saveSettings: function saveSettings() {
-        console.log("saveSettings fired");
+
+        //validate fields
+        var key = this.state.key;
+        if (key && key !== "" && !validator.isAlphanumeric(key)) {
+            console.log("key fails validation");
+            alert("API Key fails validation");
+            return;
+        }
+
+        var email = this.state.email;
+        if (key && key !== "" && email && email !== "" && !validator.isEmail(email)) {
+            console.log("email fails validation");
+            alert("Email fails validation");
+            return;
+        }
+
+        var settings = {
+            key: this.state.key,
+            email: this.state.email
+        };
+
+        SettingsActions.updateSettings(settings);
+
+        //transition to SiteList
+        Router.HashLocation.push("/");
     },
 
-    handleChange: function handleChange(event) {},
+    handleChange: function handleChange(event) {
+        var changeObject = {};
+        changeObject[event.target.id] = event.target.value;
+        this.setState(changeObject, function () {
+            console.log(this.state);
+        });
+    },
 
     render: function render() {
 
@@ -34450,7 +34511,7 @@ var React = require("react"),
                         { htmlFor: "key" },
                         "Mandrill API Key"
                     ),
-                    React.createElement("input", { id: "key", className: "form-control", type: "text", onChange: this.handleChange })
+                    React.createElement("input", { id: "key", className: "form-control", type: "text", onChange: this.handleChange, value: this.state.key })
                 ),
                 React.createElement(
                     "div",
@@ -34460,7 +34521,7 @@ var React = require("react"),
                         { htmlFor: "email" },
                         "Recipient Email Address"
                     ),
-                    React.createElement("input", { id: "email", className: "form-control", type: "email", onChange: this.handleChange })
+                    React.createElement("input", { id: "email", className: "form-control", type: "email", onChange: this.handleChange, value: this.state.email })
                 ),
                 React.createElement(
                     "div",
@@ -34483,9 +34544,7 @@ var React = require("react"),
 
 module.exports = Settings;
 
-//console.log('handling change');
-
-},{"react":"/home/chris/watchdogr/node_modules/react/react.js","react-router":"/home/chris/watchdogr/node_modules/react-router/lib/index.js"}],"/home/chris/watchdogr/scripts/components/sitelist.jsx":[function(require,module,exports){
+},{"../actions/settings":"/home/chris/watchdogr/scripts/actions/settings.js","../stores/settings":"/home/chris/watchdogr/scripts/stores/settings.js","react":"/home/chris/watchdogr/node_modules/react/react.js","react-router":"/home/chris/watchdogr/node_modules/react-router/lib/index.js","validator":"/home/chris/watchdogr/node_modules/validator/validator.js"}],"/home/chris/watchdogr/scripts/components/sitelist.jsx":[function(require,module,exports){
 "use strict";
 
 var React = require("react"),
@@ -34497,11 +34556,7 @@ var React = require("react"),
     displayName: "SiteList",
 
     getInitialState: function getInitialState() {
-        //SiteActions.loadSites();
-        //siteStore.loadSites();
         return { sites: [] };
-
-        //return {sites: [{url: 'http://chrisgriffing.com', status: 'DOWN'}]};
     },
     onSitesChange: function onSitesChange(sites) {
         this.setState({
@@ -34786,7 +34841,58 @@ var status = {
 
 module.exports = status;
 
-},{}],"/home/chris/watchdogr/scripts/stores/sites.js":[function(require,module,exports){
+},{}],"/home/chris/watchdogr/scripts/stores/settings.js":[function(require,module,exports){
+"use strict";
+
+var React = require("react"),
+    Reflux = require("reflux"),
+    SettingsActions = require("../actions/settings"),
+    localForage = require("localforage");
+
+var SettingsStore = Reflux.createStore({
+
+	settings: {},
+
+	init: function init() {
+		this.listenTo(SettingsActions.updateSettings, this.updateSettings);
+		this.listenTo(SettingsActions.loadSettings, this.loadSettings);
+	},
+
+	updateSettings: function updateSettings(settings) {
+
+		//save settings to property
+		this.settings = settings;
+
+		//save settings to localForage
+		localForage.setItem("settings", this.settings, function (value) {
+			console.log("update settings value: ", value);
+		});
+
+		//return the array
+		this.trigger(this.settings);
+	},
+
+	loadSettings: function loadSettings() {
+		var self = this;
+		//load settings here in init instead of a custom loadSettings action
+		localForage.getItem("settings", function (err, value) {
+			if (err) {
+				console.log("load settings err: ", err);
+			} else {
+				console.log("load settings value: ", value);
+				if (value) {
+					self.settings = value;
+				}
+			}
+			self.trigger(self.settings);
+		});
+	}
+
+});
+
+module.exports = SettingsStore;
+
+},{"../actions/settings":"/home/chris/watchdogr/scripts/actions/settings.js","localforage":"/home/chris/watchdogr/node_modules/localforage/src/localforage.js","react":"/home/chris/watchdogr/node_modules/react/react.js","reflux":"/home/chris/watchdogr/node_modules/reflux/index.js"}],"/home/chris/watchdogr/scripts/stores/sites.js":[function(require,module,exports){
 "use strict";
 
 var React = require("react"),

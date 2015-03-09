@@ -8,11 +8,7 @@ var React = require('react'),
 
 SiteList = React.createClass({
     getInitialState: function() {
-        //SiteActions.loadSites();
-        //siteStore.loadSites();
         return {sites: []};
-
-        //return {sites: [{url: 'http://chrisgriffing.com', status: 'DOWN'}]};
     },
     onSitesChange : function(sites) {
         this.setState({

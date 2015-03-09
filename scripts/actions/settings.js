@@ -5,7 +5,7 @@ var React = require('react'),
 
 var siteActions = Reflux.createActions([
 	'updateSettings',
-	'saveSettings'
+	'loadSettings'
 ]);
 
 module.exports = siteActions;
