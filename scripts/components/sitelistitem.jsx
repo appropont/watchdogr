@@ -7,6 +7,7 @@ var React = require('react'),
     SiteActions = require('../actions/sites'),
     Promise = require('bluebird'),
     request = require('superagent'),
+    moment = require('moment'),
 
 
 SiteListItem = React.createClass({
@@ -84,6 +85,8 @@ SiteListItem = React.createClass({
                 break;
         }
 
+        var timeago = moment(this.state.lastChecked).format('h:mma M/D/YY');
+
 
         return (
             <div className="list-group-item site clearfix">
@@ -97,7 +100,7 @@ SiteListItem = React.createClass({
                     </div>
                     <div className="full-width">
                         <div className="detail">Status: {this.state.status}</div> 
-                        <div className="detail">Last checked: {this.state.lastChecked}</div>
+                        <div className="detail">Last checked: {timeago}</div>
                     </div>
                 </div>
                 <div className="col-xs-1 delete">
