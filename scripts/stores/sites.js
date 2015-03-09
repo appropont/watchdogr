@@ -2,11 +2,12 @@
 
 var React = require('react'),
 	Reflux = require('reflux'),
-	siteActions = require('../actions/sites');
+	siteActions = require('../actions/sites'),
+	localForage = require('localforage');
 
 var siteStore = Reflux.createStore({
 
-	//sites : [],
+	//default value
 	sites : [{url: 'https://api.github.com/', timer: "4"}],
 
 	init : function() {
@@ -21,7 +22,9 @@ var siteStore = Reflux.createStore({
 		this.sites.push(site);
 
 		//save array to localForage
-		//do I even need to await response?
+		localForage.setItem('sites', this.sites, function(value) {
+			console.log('after Addsite local save: ', value);
+		});
 
 		//return the array
 		this.trigger(this.sites);
@@ -44,14 +47,28 @@ var siteStore = Reflux.createStore({
 			var sites = this.sites;
 			sites.splice(siteIndex, 1);
 			this.sites = sites;
+			localForage.setItem('sites', this.sites, function(value) {
+				console.log('after removeSite local save: ', value);
+			});
 		}
 
 		this.trigger(this.sites);
 	},
 
 	loadSites : function() {
-		console.log('loading sites');
-		this.trigger(this.sites);
+		var self = this;
+		localForage.getItem('sites', function(err, value) {
+
+			if(err) {
+				console.log('loadSites error after load: ', err);
+			} else {
+				console.log('loadSites after load: ', value);
+				if(value) {
+					self.sites = value;	
+				}
+			}
+			self.trigger(self.sites);
+		});
 	}
 
 })
