@@ -5,6 +5,9 @@ var React = require('react'),
         status: require('../constants/status')
     },
     SiteActions = require('../actions/sites'),
+    Promise = require('bluebird'),
+    request = require('superagent'),
+
 
 SiteListItem = React.createClass({
 
@@ -13,6 +16,45 @@ SiteListItem = React.createClass({
             status: 'OK',
             lastChecked: 'N/A'
         }
+    },
+
+    componentDidMount : function() {
+        //check the status of the site
+        this.updateStatus()
+
+        //initiate timer for next check
+    },
+
+    updateStatus : function() {
+        var self = this;
+        return new Promise(function(resolve, reject) {
+
+            self.setState({status: 'UPDATING'});
+            try{
+                request('GET', self.props.url)
+                    .end(function(result) {
+                        console.log('result:', result);
+                        if(!result.status) {
+                            reject({error: 'Error: request did not return status'});
+                            return;
+                        }
+
+                        var newState = {lastChecked: new Date().toISOString()};
+                        if(result.status === 200) {
+                            newState.status = 'OK';
+                        } else if(result.status >= 400 && result.status <= 600) {
+                            newState.status = 'DOWN';
+                        } else {
+                            newState.status = 'ERROR';
+                        }
+                        self.setState(newState);
+
+                    });
+            } catch(e) {
+                console.log('request error');
+            }
+
+        });
     },
 
     handleDelete : function() {

@@ -7,7 +7,7 @@ var React = require('react'),
 var siteStore = Reflux.createStore({
 
 	//sites : [],
-	sites : [{url: 'http://chrisgriffing.com', timer: "4"}],
+	sites : [{url: 'https://api.github.com/', timer: "4"}],
 
 	init : function() {
 		this.listenTo(siteActions.addSite, this.addSite);

@@ -32,7 +32,7 @@ var React = require('react'),
                 alert('Error: url fails validation');
                 return;
             }
-            if(url.indexOf("http://") === -1 || url.indexOf("https://") === -1) {
+            if(url.indexOf("http://") === -1 && url.indexOf("https://") === -1) {
                 url = 'http://' + url;
             }
 
