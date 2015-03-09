@@ -8,6 +8,9 @@
 @import 'bootstrap.lumen';
 @import 'bootstrap.lumen.custom';
 
+//Font Awesome
+@import '../node_modules/font-awesome/scss/font-awesome';
+
 //Components
 @import 'components/sitelist';
 @import 'components/sitelistitem';

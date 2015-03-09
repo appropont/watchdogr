@@ -21,7 +21,8 @@
     "react-router": "~0.12.4",
     "localforage": "~1.2.2",
     "validator": "~3.33.0",
-    "bluebird": "~2.9.13"
+    "bluebird": "~2.9.13",
+    "font-awesome": "~4.3.0"
   },
   "devDependencies": {
     "babelify": "^5.0.3",

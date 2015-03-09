@@ -76,12 +76,17 @@ gulp.task('styles', function() {
     .pipe(reload({stream: true}));
 });
 
+gulp.task('fonts', function() {
+  return gulp.src('node_modules/font-awesome/fonts/*')
+    .pipe(gulp.dest('dist/fonts'));
+});
+
 gulp.task('watchTask', function() {
   gulp.watch(p.scss, ['styles']);
 });
 
 gulp.task('watch', ['clean'], function() {
-  gulp.start(['browserSync', 'watchTask', 'watchify', 'styles']);
+  gulp.start(['browserSync', 'watchTask', 'watchify', 'styles', 'fonts']);
 });
 
 gulp.task('build', ['clean'], function() {
