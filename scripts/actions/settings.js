@@ -5,7 +5,8 @@ var React = require('react'),
 
 var siteActions = Reflux.createActions([
 	'updateSettings',
-	'loadSettings'
+	'loadSettings',
+	'sendEmailAlert'
 ]);
 
 module.exports = siteActions;

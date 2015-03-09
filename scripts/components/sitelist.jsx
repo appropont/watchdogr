@@ -4,6 +4,7 @@ var React = require('react'),
     SiteListItem = require('./sitelistitem.jsx'),
     siteStore = require('../stores/sites'),
     SiteActions = require('../actions/sites'),
+    SettingsActions = require('../actions/settings'),
     Link = require('react-router').Link,
 
 SiteList = React.createClass({
@@ -18,6 +19,8 @@ SiteList = React.createClass({
     componentDidMount: function() {
         this.unsubscribe = siteStore.listen(this.onSitesChange);
         SiteActions.loadSites();
+        SettingsActions.loadSettings();
+
     },
     componentWillUnmount: function() {
         this.unsubscribe();

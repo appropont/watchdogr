@@ -34273,7 +34273,7 @@ module.exports = function(arr, fn, initial){
 var React = require("react"),
     Reflux = require("reflux");
 
-var siteActions = Reflux.createActions(["updateSettings", "loadSettings"]);
+var siteActions = Reflux.createActions(["updateSettings", "loadSettings", "sendEmailAlert"]);
 
 module.exports = siteActions;
 
@@ -34551,6 +34551,7 @@ var React = require("react"),
     SiteListItem = require("./sitelistitem.jsx"),
     siteStore = require("../stores/sites"),
     SiteActions = require("../actions/sites"),
+    SettingsActions = require("../actions/settings"),
     Link = require("react-router").Link,
     SiteList = React.createClass({
     displayName: "SiteList",
@@ -34566,6 +34567,7 @@ var React = require("react"),
     componentDidMount: function componentDidMount() {
         this.unsubscribe = siteStore.listen(this.onSitesChange);
         SiteActions.loadSites();
+        SettingsActions.loadSettings();
     },
     componentWillUnmount: function componentWillUnmount() {
         this.unsubscribe();
@@ -34629,7 +34631,7 @@ var React = require("react"),
 
 module.exports = SiteList;
 
-},{"../actions/sites":"/home/chris/watchdogr/scripts/actions/sites.js","../stores/sites":"/home/chris/watchdogr/scripts/stores/sites.js","./sitelistitem.jsx":"/home/chris/watchdogr/scripts/components/sitelistitem.jsx","react":"/home/chris/watchdogr/node_modules/react/react.js","react-router":"/home/chris/watchdogr/node_modules/react-router/lib/index.js"}],"/home/chris/watchdogr/scripts/components/sitelistitem.jsx":[function(require,module,exports){
+},{"../actions/settings":"/home/chris/watchdogr/scripts/actions/settings.js","../actions/sites":"/home/chris/watchdogr/scripts/actions/sites.js","../stores/sites":"/home/chris/watchdogr/scripts/stores/sites.js","./sitelistitem.jsx":"/home/chris/watchdogr/scripts/components/sitelistitem.jsx","react":"/home/chris/watchdogr/node_modules/react/react.js","react-router":"/home/chris/watchdogr/node_modules/react-router/lib/index.js"}],"/home/chris/watchdogr/scripts/components/sitelistitem.jsx":[function(require,module,exports){
 "use strict";
 
 var React = require("react"),
@@ -34637,6 +34639,7 @@ var React = require("react"),
     status: require("../constants/status")
 },
     SiteActions = require("../actions/sites"),
+    SettingsActions = require("../actions/settings"),
     Promise = require("bluebird"),
     request = require("superagent"),
     moment = require("moment"),
@@ -34657,32 +34660,38 @@ var React = require("react"),
 
     updateStatus: function updateStatus() {
         var self = this;
-        return new Promise(function (resolve, reject) {
+        self.setState({ status: "UPDATING" });
+        request("GET", self.props.url).end(function (result) {
 
-            self.setState({ status: "UPDATING" });
-            request("GET", self.props.url).end(function (result) {
+            //initiate new timeout
+            var timerMS = self.props.timer * 1000 * 60 * 60;
+            setTimeout(self.updateStatus, timerMS);
 
-                //initiate new timeout
-                var timerMS = self.props.timer * 1000 * 60 * 60;
-                setTimeout(self.updateStatus, timerMS);
+            //validate status
+            if (!result.status) {
+                console.log("Error: request did not return status");
+                return;
+            }
 
-                //validate status
-                if (!result.status) {
-                    reject({ error: "Error: request did not return status" });
-                    return;
-                }
+            //change state
+            var lastChecked = new Date().toISOString();
+            console.log("lastChecked: ", lastChecked);
+            var newState = { lastChecked: lastChecked };
+            if (result.status === 200) {
+                newState.status = "OK";
+            } else if (result.status >= 400 && result.status <= 600) {
+                newState.status = "DOWN";
+                self.sendEmailAlert();
+            } else {
+                newState.status = "ERROR";
+            }
+            self.setState(newState);
+        });
+    },
 
-                //change state
-                var newState = { lastChecked: new Date().toISOString() };
-                if (result.status === 200) {
-                    newState.status = "OK";
-                } else if (result.status >= 400 && result.status <= 600) {
-                    newState.status = "DOWN";
-                } else {
-                    newState.status = "ERROR";
-                }
-                self.setState(newState);
-            });
+    sendEmailAlert: function sendEmailAlert() {
+        SettingsActions.sendEmailAlert({
+            url: this.props.url
         });
     },
 
@@ -34772,7 +34781,7 @@ var React = require("react"),
 
 module.exports = SiteListItem;
 
-},{"../actions/sites":"/home/chris/watchdogr/scripts/actions/sites.js","../constants/status":"/home/chris/watchdogr/scripts/constants/status.js","bluebird":"/home/chris/watchdogr/node_modules/bluebird/js/browser/bluebird.js","moment":"/home/chris/watchdogr/node_modules/moment/moment.js","react":"/home/chris/watchdogr/node_modules/react/react.js","superagent":"/home/chris/watchdogr/node_modules/superagent/lib/client.js"}],"/home/chris/watchdogr/scripts/components/watchdogr.jsx":[function(require,module,exports){
+},{"../actions/settings":"/home/chris/watchdogr/scripts/actions/settings.js","../actions/sites":"/home/chris/watchdogr/scripts/actions/sites.js","../constants/status":"/home/chris/watchdogr/scripts/constants/status.js","bluebird":"/home/chris/watchdogr/node_modules/bluebird/js/browser/bluebird.js","moment":"/home/chris/watchdogr/node_modules/moment/moment.js","react":"/home/chris/watchdogr/node_modules/react/react.js","superagent":"/home/chris/watchdogr/node_modules/superagent/lib/client.js"}],"/home/chris/watchdogr/scripts/components/watchdogr.jsx":[function(require,module,exports){
 "use strict";
 
 var Router = require("react-router");
@@ -34847,7 +34856,8 @@ module.exports = status;
 var React = require("react"),
     Reflux = require("reflux"),
     SettingsActions = require("../actions/settings"),
-    localForage = require("localforage");
+    localForage = require("localforage"),
+    request = require("superagent");
 
 var SettingsStore = Reflux.createStore({
 
@@ -34856,6 +34866,7 @@ var SettingsStore = Reflux.createStore({
 	init: function init() {
 		this.listenTo(SettingsActions.updateSettings, this.updateSettings);
 		this.listenTo(SettingsActions.loadSettings, this.loadSettings);
+		this.listenTo(SettingsActions.sendEmailAlert, this.sendEmailAlert);
 	},
 
 	updateSettings: function updateSettings(settings) {
@@ -34886,13 +34897,39 @@ var SettingsStore = Reflux.createStore({
 			}
 			self.trigger(self.settings);
 		});
+	},
+
+	//This doesn't really seem to belong here
+	//but it makes sense for it to live in the same place that the settings are defined
+	sendEmailAlert: function sendEmailAlert(site) {
+		console.log("sendEmailAlert this.settings:", this.settings);
+		var requestData = {
+			key: this.settings.key,
+			message: {
+				html: "<p>Site Down: " + site.url + "</p>",
+				subject: "Alert: Site Down",
+				from_email: "no-reply@watchdogr.com",
+				from_name: "Watchdogr",
+				to: [{
+					email: this.settings.email,
+					type: "to"
+				}],
+				headers: {
+					"Reply-To": "no-reply@watchdogr.com"
+				}
+			}
+		};
+
+		request("POST", "https://mandrillapp.com/api/1.0/messages/send.json").send(requestData).end(function (result) {
+			console.log("sendEmailAlert result: ", result);
+		});
 	}
 
 });
 
 module.exports = SettingsStore;
 
-},{"../actions/settings":"/home/chris/watchdogr/scripts/actions/settings.js","localforage":"/home/chris/watchdogr/node_modules/localforage/src/localforage.js","react":"/home/chris/watchdogr/node_modules/react/react.js","reflux":"/home/chris/watchdogr/node_modules/reflux/index.js"}],"/home/chris/watchdogr/scripts/stores/sites.js":[function(require,module,exports){
+},{"../actions/settings":"/home/chris/watchdogr/scripts/actions/settings.js","localforage":"/home/chris/watchdogr/node_modules/localforage/src/localforage.js","react":"/home/chris/watchdogr/node_modules/react/react.js","reflux":"/home/chris/watchdogr/node_modules/reflux/index.js","superagent":"/home/chris/watchdogr/node_modules/superagent/lib/client.js"}],"/home/chris/watchdogr/scripts/stores/sites.js":[function(require,module,exports){
 "use strict";
 
 var React = require("react"),

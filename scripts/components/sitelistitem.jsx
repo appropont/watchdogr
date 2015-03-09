@@ -5,6 +5,7 @@ var React = require('react'),
         status: require('../constants/status')
     },
     SiteActions = require('../actions/sites'),
+    SettingsActions = require('../actions/settings'),
     Promise = require('bluebird'),
     request = require('superagent'),
     moment = require('moment'),
@@ -26,34 +27,39 @@ SiteListItem = React.createClass({
 
     updateStatus : function() {
         var self = this;
-        return new Promise(function(resolve, reject) {
+        self.setState({status: 'UPDATING'});
+        request('GET', self.props.url)
+            .end(function(result) {
 
-            self.setState({status: 'UPDATING'});
-            request('GET', self.props.url)
-                .end(function(result) {
+                //initiate new timeout
+                var timerMS = self.props.timer * 1000 * 60 * 60;
+                setTimeout(self.updateStatus, timerMS);
 
-                    //initiate new timeout
-                    var timerMS = self.props.timer * 1000 * 60 * 60;
-                    setTimeout(self.updateStatus, timerMS);
+                //validate status
+                if(!result.status) {
+                    console.log('Error: request did not return status');
+                    return;
+                }
 
-                    //validate status
-                    if(!result.status) {
-                        reject({error: 'Error: request did not return status'});
-                        return;
-                    }
+                //change state
+                var lastChecked = new Date().toISOString();
+                console.log('lastChecked: ', lastChecked);
+                var newState = {lastChecked: lastChecked};
+                if(result.status === 200) {
+                    newState.status = 'OK';
+                } else if(result.status >= 400 && result.status <= 600) {
+                    newState.status = 'DOWN';
+                    self.sendEmailAlert();
+                } else {
+                    newState.status = 'ERROR';
+                }
+                self.setState(newState);
+            });
+    },
 
-                    //change state
-                    var newState = {lastChecked: new Date().toISOString()};
-                    if(result.status === 200) {
-                        newState.status = 'OK';
-                    } else if(result.status >= 400 && result.status <= 600) {
-                        newState.status = 'DOWN';
-                    } else {
-                        newState.status = 'ERROR';
-                    }
-                    self.setState(newState);
-                });
-
+    sendEmailAlert : function() {
+        SettingsActions.sendEmailAlert({
+            url: this.props.url
         });
     },
 
