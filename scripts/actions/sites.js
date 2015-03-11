@@ -7,7 +7,8 @@ var siteActions = Reflux.createActions([
 	'addSite',
 	'saveSites',
 	'loadSites',
-	'removeSite'
+	'removeSite',
+	'setTimestamp'
 ]);
 
 module.exports = siteActions;

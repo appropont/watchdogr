@@ -14,6 +14,7 @@ var siteStore = Reflux.createStore({
 		this.listenTo(siteActions.addSite, this.addSite);
 		this.listenTo(siteActions.removeSite, this.removeSite);
 		this.listenTo(siteActions.loadSites, this.loadSites);
+		this.listenTo(siteActions.setTimestamp, this.setTimestamp);
 	},
 
 	addSite : function(site) {
@@ -44,7 +45,7 @@ var siteStore = Reflux.createStore({
 		if(siteIndex === -1) {
 			console.log('removeSite: Error: no site found matching url');
 		} else {
-			var sites = this.sites;
+			var sites = JSON.parse(JSON.stringify(this.sites));
 			sites.splice(siteIndex, 1);
 			this.sites = sites;
 			localForage.setItem('sites', this.sites, function(value) {
@@ -69,6 +70,27 @@ var siteStore = Reflux.createStore({
 			}
 			self.trigger(self.sites);
 		});
+	},
+
+	setTimestamp : function(siteUrl, timestamp) {
+		console.log('setting timestamp');
+
+		//modify site in array
+		var newSites = JSON.parse(JSON.stringify(this.sites));
+		for(var i = 0; i < newSites.length; i++) {
+			if(newSites[i].url === siteUrl) {
+				newSites[i].lastChecked = timestamp;
+			}
+		}
+		this.sites = newSites;
+
+		//save sites to local storage
+		localForage.setItem('sites', this.sites, function(err, value) {
+			console.log('setTimestamp error: ', err);
+			console.log('setTimestamp value: ', value);
+		});
+
+		this.trigger(this.sites);
 	}
 
 })

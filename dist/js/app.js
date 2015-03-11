@@ -34283,7 +34283,7 @@ module.exports = siteActions;
 var React = require("react"),
     Reflux = require("reflux");
 
-var siteActions = Reflux.createActions(["addSite", "saveSites", "loadSites", "removeSite"]);
+var siteActions = Reflux.createActions(["addSite", "saveSites", "loadSites", "removeSite", "setTimestamp"]);
 
 module.exports = siteActions;
 
@@ -34579,7 +34579,7 @@ var React = require("react"),
         //Create list items for sites
         for (var i = 0; i < this.state.sites.length; i++) {
             var site = this.state.sites[i];
-            listItems.push(React.createElement(SiteListItem, { key: site.url, url: site.url, timer: site.timer }));
+            listItems.push(React.createElement(SiteListItem, { key: site.url, url: site.url, timer: site.timer, lastChecked: site.lastChecked }));
         }
 
         //Add Error list item if no sites found
@@ -34648,14 +34648,28 @@ var React = require("react"),
 
     getInitialState: function getInitialState() {
         return {
-            status: "OK",
-            lastChecked: "N/A"
+            status: "OK"
         };
     },
 
     componentDidMount: function componentDidMount() {
-        //check the status of the site
-        this.updateStatus();
+        //check if the last time checked is longer than timer
+        var now = Date.now(),
+            timerMS = this.props.timer * 1000 * 60 * 60,
+            timeSinceChecked = now - this.props.lastChecked;
+
+        if (timeSinceChecked >= timerMS) {
+            this.updateStatus();
+        } else {
+            var partialTimerDuration = timerMS - timeSinceChecked;
+            this.timeout = setTimeout(this.updateStatus, partialTimerDuration);
+        }
+    },
+
+    componentWillUnmount: function componentWillUnmount() {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
     },
 
     updateStatus: function updateStatus() {
@@ -34665,7 +34679,7 @@ var React = require("react"),
 
             //initiate new timeout
             var timerMS = self.props.timer * 1000 * 60 * 60;
-            setTimeout(self.updateStatus, timerMS);
+            self.timeout = setTimeout(self.updateStatus, timerMS);
 
             //validate status
             if (!result.status) {
@@ -34674,12 +34688,13 @@ var React = require("react"),
             }
 
             //change state
-            var lastChecked = new Date().toISOString();
-            console.log("lastChecked: ", lastChecked);
-            var newState = { lastChecked: lastChecked };
+            var timestamp = Date.now();
+            SiteActions.setTimestamp(self.props.url, timestamp);
+
+            var newState = {};
             if (result.status === 200) {
                 newState.status = "OK";
-            } else if (result.status >= 400 && result.status <= 600) {
+            } else if (result.status >= 400 && result.status < 600) {
                 newState.status = "DOWN";
                 self.sendEmailAlert();
             } else {
@@ -34720,9 +34735,15 @@ var React = require("react"),
             case constants.status.ERROR:
                 statusIconClasses += " text-warning fa-times-circle";
                 break;
+            default:
+                statusIconClasses += " fa-circle-o";
         }
 
-        var timeago = moment(this.state.lastChecked).format("h:mma M/D/YY");
+        var timeago = "N/A";
+        if (this.props.lastChecked) {
+            var dateFromTimestamp = new Date(this.props.lastChecked);
+            timeago = moment(dateFromTimestamp).format("h:mma M/D/YY");
+        }
 
         return React.createElement(
             "div",
@@ -34952,6 +34973,7 @@ var siteStore = Reflux.createStore({
 		this.listenTo(siteActions.addSite, this.addSite);
 		this.listenTo(siteActions.removeSite, this.removeSite);
 		this.listenTo(siteActions.loadSites, this.loadSites);
+		this.listenTo(siteActions.setTimestamp, this.setTimestamp);
 	},
 
 	addSite: function addSite(site) {
@@ -34981,7 +35003,7 @@ var siteStore = Reflux.createStore({
 		if (siteIndex === -1) {
 			console.log("removeSite: Error: no site found matching url");
 		} else {
-			var sites = this.sites;
+			var sites = JSON.parse(JSON.stringify(this.sites));
 			sites.splice(siteIndex, 1);
 			this.sites = sites;
 			localForage.setItem("sites", this.sites, function (value) {
@@ -35006,6 +35028,27 @@ var siteStore = Reflux.createStore({
 			}
 			self.trigger(self.sites);
 		});
+	},
+
+	setTimestamp: function setTimestamp(siteUrl, timestamp) {
+		console.log("setting timestamp");
+
+		//modify site in array
+		var newSites = JSON.parse(JSON.stringify(this.sites));
+		for (var i = 0; i < newSites.length; i++) {
+			if (newSites[i].url === siteUrl) {
+				newSites[i].lastChecked = timestamp;
+			}
+		}
+		this.sites = newSites;
+
+		//save sites to local storage
+		localForage.setItem("sites", this.sites, function (err, value) {
+			console.log("setTimestamp error: ", err);
+			console.log("setTimestamp value: ", value);
+		});
+
+		this.trigger(this.sites);
 	}
 
 });

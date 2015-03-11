@@ -33,7 +33,7 @@ SiteList = React.createClass({
         for(var i = 0; i < this.state.sites.length; i++) {
             var site = this.state.sites[i];
             listItems.push(
-                <SiteListItem key={site.url} url={site.url} timer={site.timer} />
+                <SiteListItem key={site.url} url={site.url} timer={site.timer} lastChecked={site.lastChecked} />
             );
         }
 

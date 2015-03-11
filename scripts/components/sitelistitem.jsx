@@ -15,14 +15,28 @@ SiteListItem = React.createClass({
 
     getInitialState: function() {
         return {
-            status: 'OK',
-            lastChecked: 'N/A'
+            status: 'OK'
         }
     },
 
     componentDidMount : function() {
-        //check the status of the site
-        this.updateStatus();
+        //check if the last time checked is longer than timer
+        var now = Date.now(),
+            timerMS = this.props.timer * 1000 * 60 * 60,
+            timeSinceChecked = now - this.props.lastChecked;
+
+        if(timeSinceChecked >= timerMS) {
+            this.updateStatus();
+        } else {
+            var partialTimerDuration = timerMS - timeSinceChecked;
+            this.timeout = setTimeout(this.updateStatus, partialTimerDuration);
+        }
+    },
+
+    componentWillUnmount : function() {
+        if(this.timeout) {
+            clearTimeout(this.timeout);
+        }
     },
 
     updateStatus : function() {
@@ -33,7 +47,7 @@ SiteListItem = React.createClass({
 
                 //initiate new timeout
                 var timerMS = self.props.timer * 1000 * 60 * 60;
-                setTimeout(self.updateStatus, timerMS);
+                self.timeout = setTimeout(self.updateStatus, timerMS);
 
                 //validate status
                 if(!result.status) {
@@ -42,12 +56,13 @@ SiteListItem = React.createClass({
                 }
 
                 //change state
-                var lastChecked = new Date().toISOString();
-                console.log('lastChecked: ', lastChecked);
-                var newState = {lastChecked: lastChecked};
+                var timestamp = Date.now();
+                SiteActions.setTimestamp(self.props.url, timestamp);
+
+                var newState = {};
                 if(result.status === 200) {
                     newState.status = 'OK';
-                } else if(result.status >= 400 && result.status <= 600) {
+                } else if(result.status >= 400 && result.status < 600) {
                     newState.status = 'DOWN';
                     self.sendEmailAlert();
                 } else {
@@ -88,9 +103,15 @@ SiteListItem = React.createClass({
             case constants.status.ERROR:
                 statusIconClasses += ' text-warning fa-times-circle';
                 break;
+            default:
+                statusIconClasses += ' fa-circle-o';
         }
 
-        var timeago = moment(this.state.lastChecked).format('h:mma M/D/YY');
+        var timeago = 'N/A';
+        if(this.props.lastChecked) {
+            var dateFromTimestamp = new Date(this.props.lastChecked);
+            timeago = moment(dateFromTimestamp).format('h:mma M/D/YY');
+        }
 
 
         return (
