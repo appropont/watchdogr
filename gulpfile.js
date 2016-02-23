@@ -48,14 +48,14 @@ gulp.task('watchify', function() {
       .pipe(reload({stream: true}));
   }
 
-  bundler.transform(babelify)
+  bundler.transform("babelify", {presets: ["es2015", "react"]})
   .on('update', rebundle);
   return rebundle();
 });
 
 gulp.task('browserify', function() {
   browserify(p.jsx)
-    .transform(babelify)
+    .transform("babelify", {presets: ["es2015", "react"]})
     .bundle()
     .pipe(source(p.bundle))
     .pipe(buffer())
@@ -85,13 +85,13 @@ gulp.task('watchTask', function() {
   gulp.watch(p.scss, ['styles']);
 });
 
-gulp.task('watch', ['clean'], function() {
-  gulp.start(['browserSync', 'watchTask', 'watchify', 'styles', 'fonts']);
+gulp.task('watch', ['clean', 'browserSync', 'watchTask', 'watchify', 'styles', 'fonts'], function() {
+  //gulp.start(['browserSync', 'watchTask', 'watchify', 'styles', 'fonts']);
 });
 
-gulp.task('build', ['clean'], function() {
+gulp.task('build', function() {
   process.env.NODE_ENV = 'production';
-  gulp.start(['browserify', 'styles']);
+  gulp.start(['clean', 'browserify', 'styles']);
 });
 
 gulp.task('default', function() {
