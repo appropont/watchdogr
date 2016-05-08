@@ -94,7 +94,8 @@ export default function configureStore(options) {
   const store = createStore(
     resetOnLogout(appReducer, initialState),
     initialState,
-    applyMiddleware(...middleware)
+    applyMiddleware(...middleware),
+    typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
   );
 
   // Enable hot reload where available.

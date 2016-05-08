@@ -22,6 +22,7 @@ class NewTodo extends Component {
 
   onInputKeyDown(e) {
     if (e.key !== 'Enter') return;
+    console.log('this.props: ', this.props)
     const { addTodo, fields } = this.props;
     if (!fields.title.value.trim()) return;
     addTodo(fields.title.value);

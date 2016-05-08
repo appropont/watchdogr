@@ -16,45 +16,7 @@ class Header extends Component {
 
     return (
       <header>
-        <h1>
-          <Link to="/">
-            <FormattedMessage {...linksMessages.home} />
-          </Link>
-        </h1>
-        <ul>
-          <li>
-            <Link activeClassName="active" to="/firebase">
-              <FormattedMessage {...linksMessages.firebase} />
-            </Link>
-          </li>
-          <li>
-            <Link activeClassName="active" to="/todos">
-              <FormattedMessage {...linksMessages.todos} />
-            </Link>
-          </li>
-          <li>
-            <Link activeClassName="active" to="/fields">
-              <FormattedMessage {...linksMessages.fields} />
-            </Link>
-          </li>
-          <li>
-            <Link activeClassName="active" to="/intl">
-              <FormattedMessage {...linksMessages.intl} />
-            </Link>
-          </li>
-          <li>
-            <Link activeClassName="active" to="/me">
-              <FormattedMessage {...linksMessages.me} />
-            </Link>
-          </li>
-          {!viewer &&
-            <li>
-              <Link activeClassName="active" to="/login">
-                <FormattedMessage {...linksMessages.login} />
-              </Link>
-            </li>
-          }
-        </ul>
+        <h1>Watchdogr</h1>
       </header>
     );
   }

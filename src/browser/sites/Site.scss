@@ -1,0 +1,78 @@
+.site {
+	h3 {
+		margin: 0;
+	}
+
+	.panel-heading i {
+		vertical-align: bottom;
+	}
+
+	.detail {
+		float: left;
+		margin-right: 1rem;
+	}
+
+	.favicon {
+		margin: 1px;
+		max-height: 100%;
+		width: auto;
+		display: inline;
+		display: inline-block;
+		vertical-align: initial;
+		@media (min-width: 480px) {
+			margin: 0;
+			vertical-align: super;
+		}
+	}
+
+	.url {
+		display: inline;
+		display: inline-block;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		width: 85%;
+		@media (max-width: 480px) {
+			font-size: 20px;
+		}
+	}
+
+	.status-icon-wrapper {
+		padding: 0;
+		text-align: center;
+	}
+
+	.site-status-icon {
+		padding-top: 1rem;
+
+		@media screen and (min-width: 480px) {
+			padding-top: 1rem;
+		}
+	}
+
+	.site-status-icon i {
+		font-size: 3rem;
+	}
+
+	.delete {
+		padding: 0;
+	}
+
+}
+
+.site-updating-icon {
+	animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+
+.site-up-icon {
+	
+}
+
+.site-down-icon {
+	
+}

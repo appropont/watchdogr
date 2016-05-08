@@ -10,6 +10,9 @@ import todos from '../todos/reducer';
 import ui from '../ui/reducer';
 import users from '../users/reducer';
 
+import sites from '../sites/reducer';
+import settings from '../settings/reducer';
+
 export default combineReducers({
   auth,
   config,
@@ -19,5 +22,8 @@ export default combineReducers({
   routing,
   todos,
   ui,
-  users
+  users,
+  
+  sites,
+  settings
 });

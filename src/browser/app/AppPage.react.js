@@ -1,4 +1,9 @@
 import './AppPage.scss';
+
+import '../../../node_modules/font-awesome/css/font-awesome.css';
+import '../lib/bootstrap.lumen.scss';
+import '../lib/bootstrap.lumen.custom.scss';
+
 import Component from 'react-pure-render/component';
 import Footer from './Footer.react';
 import Header from './Header.react';
@@ -36,12 +41,12 @@ class AppPage extends Component {
       <div className="container">
         <Helmet
           htmlAttributes={{ lang: currentLocale }}
-          titleTemplate="%s - Este.js"
+          titleTemplate="Watchdogr"
           meta={[
             ...bootstrap4Metas,
             {
               name: 'description',
-              content: 'Dev stack and starter kit for functional and universal React apps'
+              content: 'Simple tool to monitor the status of web servers'
             }
           ]}
           link={[

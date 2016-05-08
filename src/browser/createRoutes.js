@@ -8,9 +8,12 @@ import Me from './me/MePage.react';
 import NotFound from './notfound/NotFoundPage.react';
 import Profile from './me/ProfilePage.react';
 import React from 'react';
-import Settings from './me/SettingsPage.react';
 import Todos from './todos/TodosPage.react';
 import { IndexRoute, Route } from 'react-router';
+
+import SiteList from './sites/SiteList.react';
+import AddSite from './sites/AddSite.react';
+import Settings from './settings/Settings.react';
 
 export default function createRoutes(getState) {
   const requireAuth = (nextState, replace) => {
@@ -25,16 +28,11 @@ export default function createRoutes(getState) {
 
   return (
     <Route component={App} path="/">
-      <IndexRoute component={Home} />
-      <Route component={Auth} path="login" />
+      <IndexRoute component={SiteList} />
       <Route component={Intl} path="intl" />
       <Route component={Fields} path="fields" />
-      <Route component={Firebase} path="firebase" />
-      <Route component={Me} onEnter={requireAuth} path="me">
-        <Route component={Profile} path="profile" />
-        <Route component={Settings} path="settings" />
-      </Route>
-      <Route component={Todos} path="todos" />
+      <Route component={AddSite} path="add" />
+      <Route component={Settings} path="settings" />
       <Route component={NotFound} path="*" />
     </Route>
   );
