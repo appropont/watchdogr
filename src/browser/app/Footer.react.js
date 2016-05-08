@@ -15,7 +15,7 @@ export default class Footer extends Component {
 
   render() {
     return (
-      <footer>
+      <footer className="text-center">
         <p>
           <FormattedHTMLMessage {...messages.madeByHtml} />
         </p>

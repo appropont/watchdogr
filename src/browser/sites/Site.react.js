@@ -151,9 +151,13 @@ export default class Site extends Component {
             <div className="detail">Last checked: {timeago}</div>
           </div>
         </div>
-        <div className="col-xs-1 delete">
-          <a href="#" role="button" onClick={this.updateStatus}><i className="fa fa-refresh fa-2x text-primary"></i></a>
-          <a href="#" role="button" onClick={this.handleDelete}><i className="fa fa-trash fa-2x text-danger"></i></a>
+        <div className="col-xs-1 actions">
+          <div className="action update">
+            <a href="#" role="button" onClick={this.updateStatus}><i className="fa fa-refresh fa-2x text-primary"></i></a>
+          </div>
+          <div className="action remove">
+            <a href="#" role="button" onClick={this.handleDelete}><i className="fa fa-trash fa-2x text-danger"></i></a>
+          </div>
         </div>
       </div>
     )

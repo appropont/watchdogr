@@ -101,8 +101,8 @@ class AddSite extends Component {
               <input id="timer" className="form-control" type="number" onChange={this.handleChange} defaultValue={this.state.timer} />
             </div>
             <div className="form-group">
-              <button className="btn btn-success" role="button" type="submit">Add Site</button>
-              <Link to="/" className="btn btn-danger">Cancel</Link>
+              <button className="add-site-button btn btn-success" role="button" type="submit">Add Site</button>
+              <Link to="/" className="cancel-button btn btn-danger">Cancel</Link>
             </div>
           </form>
         </div>

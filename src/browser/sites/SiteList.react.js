@@ -82,12 +82,12 @@ class SiteList extends Component {
       <div className="panel panel-default list-group site-list">
         <div className="panel-heading list-group-item">
           <div>
-            <h2 className="pull-left"><i className="fa fa-server"></i> Sites</h2>
+            <h2 className="pull-left"><i className="fa fa-server list-icon"></i> Sites</h2>
             <Link to="add" className="btn btn-default">
               <i className="fa fa-plus"></i> Add
             </Link>
-            <Link to="settings" className="btn btn-default pull-right">
-              <i className="fa fa-cog"></i> Settings
+            <Link to="settings" className="btn btn-default pull-right settings-button">
+              <i className="fa fa-cog fa-2x"></i> <span className="sr-only">Settings</span>
             </Link>
           </div>
         </div>
