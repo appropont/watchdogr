@@ -59,7 +59,7 @@ class SiteList extends Component {
         lastChecked: site.lastChecked,
         status: site.status,
         setTimestamp: boundSetTimestamp,
-        updateSite: boundUpdateSite,
+        updateStatus: boundUpdateSite,
         removeSite: boundRemoveSite
       };
       listItems.push(

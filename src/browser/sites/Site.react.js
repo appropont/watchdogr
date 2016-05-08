@@ -78,7 +78,7 @@ export default class Site extends Component {
           //validate status
           if(!result || !result.status) {
             console.log('Error: request did not return status');
-            self.props.updateSite(self.props.id, constants.status.ERROR);
+            self.props.updateStatus(self.props.id, constants.status.ERROR);
             return Error('Error: request did not return status');
           }
 
@@ -93,7 +93,7 @@ export default class Site extends Component {
           } else {
             newState.status = constants.status.ERROR;
           }
-          self.props.updateSite(self.props.id, newState.status);
+          self.props.updateStatus(self.props.id, newState.status);
         });
   }
 

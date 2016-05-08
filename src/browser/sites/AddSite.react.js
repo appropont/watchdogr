@@ -33,11 +33,15 @@ class AddSite extends Component {
   }
 
   // Instance methods
-  addSite() {
+  addSite(e) {
 
     console.log('add site clicked');
     console.log('url: ', this.state.url);
     console.log('timer: ', this.state.timer);
+
+    if(e) {
+      e.preventDefault();
+    }
 
     //Validate state
     var url = this.state.url;
@@ -74,7 +78,7 @@ class AddSite extends Component {
     var changeObject = {};
     changeObject[event.target.id] = event.target.value;
     this.setState(changeObject, function() {
-      console.log(this.state);
+      //console.log(this.state);
     });
   }
 
@@ -87,18 +91,20 @@ class AddSite extends Component {
           </div>
         </div>
         <div className="panel-body">
-          <div className="form-group">
-            <label htmlFor="url">Site URL</label>
-            <input id="url" className="form-control" type="text" onChange={this.handleChange} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="timer">Timer Length (hours)</label>
-            <input id="timer" className="form-control" type="number" onChange={this.handleChange} defaultValue={this.state.timer} />
-          </div>
-          <div className="form-group">
-            <a className="btn btn-success" role="button" onClick={this.addSite}>Add Site</a>
-            <Link to="app" className="btn btn-danger">Cancel</Link>
-          </div>
+          <form className="add-site-form" onSubmit={this.addSite}>
+            <div className="form-group">
+              <label htmlFor="url">Site URL</label>
+              <input id="url" className="form-control" type="text" onChange={this.handleChange} />
+            </div>
+            <div className="form-group">
+              <label htmlFor="timer">Timer Length (hours)</label>
+              <input id="timer" className="form-control" type="number" onChange={this.handleChange} defaultValue={this.state.timer} />
+            </div>
+            <div className="form-group">
+              <button className="btn btn-success" role="button" type="submit">Add Site</button>
+              <Link to="/" className="btn btn-danger">Cancel</Link>
+            </div>
+          </form>
         </div>
       </div>
     )
