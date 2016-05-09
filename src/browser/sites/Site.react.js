@@ -60,7 +60,7 @@ export default class Site extends Component {
   updateStatus() {
     console.log('updating status')
     var self = this;
-    self.setState({status: 'UPDATING'});
+    self.props.updateStatus(self.props.id, constants.status.UPDATING);
       Request('HEAD', self.props.url)
         .end(function(err, result) {
 
@@ -71,9 +71,6 @@ export default class Site extends Component {
           self.setState({
             timeout: timeout
           });
-
-          //change state
-          console.log('props in updateStatus: ', self.props);
 
           //validate status
           if(!result || !result.status) {
