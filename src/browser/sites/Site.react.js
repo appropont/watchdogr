@@ -10,6 +10,7 @@ import SiteActions, { setTimestamp } from '../../common/sites/actions';
 import SettingsActions from '../../common/settings/actions';
 
 import StatusConstants from '../../common/constants/status';
+import StatusService from '../../common/sites/statusService';
 
 const constants = {
   status: StatusConstants
@@ -37,61 +38,22 @@ export default class Site extends Component {
   }
 
   componentDidMount() {
-    //check if the last time checked is longer than timer
-    var now = Date.now();
-    var timerMS = this.props.timer * 1000 * 60 * 60;
-    var timeSinceChecked = now - this.props.lastChecked;
-
-    if(timeSinceChecked >= timerMS) {
-      this.updateStatus();
-    } else {
-      var partialTimerDuration = timerMS - timeSinceChecked;
-      this.timeout = setTimeout(this.updateStatus, partialTimerDuration);
-    }
+    this.updateStatus();
   }
 
   componentWillUnmount() {
-    if(this.timeout) {
-      clearTimeout(this.timeout);
-    }
+    console.log('clearing timeout');
+    StatusService.clearTimeout(this.props.url);
   }
 
   // Instance methods
   updateStatus() {
-    console.log('updating status')
-    var self = this;
-    self.props.updateStatus(self.props.id, constants.status.UPDATING);
-      Request('HEAD', self.props.url)
-        .end(function(err, result) {
-
-          //initiate new timeout
-          const timerMS = self.props.timer * 1000 * 60 * 60;
-          const now = Date.now();
-          let timeout = setTimeout(self.updateStatus, timerMS);
-          self.setState({
-            timeout: timeout
-          });
-
-          //validate status
-          if(!result || !result.status) {
-            console.log('Error: request did not return status');
-            self.props.updateStatus(self.props.id, constants.status.ERROR);
-            return Error('Error: request did not return status');
-          }
-
-          console.log('result: ', result);
-
-          var newState = {};
-          if(result.statusCode >= 200 && result.statusCode < 300) {
-            newState.status = constants.status.OK;
-          } else if(result.statusCode >= 400 && result.statusCode < 600) {
-            newState.status = constants.status.DOWN;
-            self.sendEmailAlert();
-          } else {
-            newState.status = constants.status.ERROR;
-          }
-          self.props.updateStatus(self.props.id, newState.status);
-        });
+    console.log('updating status');
+    StatusService.getStatus(this.props, (status) => {
+      if(status) {
+        this.props.updateStatus(this.props.id, status);
+      }
+    });
   }
 
   sendEmailAlert() {
