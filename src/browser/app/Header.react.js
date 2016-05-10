@@ -15,8 +15,8 @@ class Header extends Component {
     const { viewer } = this.props;
 
     return (
-      <header>
-        <h1>Watchdogr</h1>
+      <header className="app-header">
+        <img src={require('./watchdogr-grey.png')} className="logo" /><h1>Watchdogr</h1>
       </header>
     );
   }
