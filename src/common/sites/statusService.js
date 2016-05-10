@@ -11,7 +11,7 @@ class StatusService {
   timeouts = {}
 
   // Using a callback instead of a more advanced solution because this method will keep firing responses
-  getStatus(site, callback) {
+  getStatus(site, callback, forceRefresh) {
     console.log('getting status: ', site, callback);
 
     const now = Date.now();
@@ -24,7 +24,7 @@ class StatusService {
     const nextUpdate = site.lastChecked + timerMS;
 
     // if not time for new request, create timeout for remaining time
-    if(nextUpdate > now) {
+    if(nextUpdate > now && !forceRefresh) {
       console.log('creating timeout for remaining time');
       const timeRemaining = nextUpdate - now;
       this.timeouts[site.url] = setTimeout(() => {

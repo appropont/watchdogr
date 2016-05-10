@@ -47,14 +47,20 @@ export default class Site extends Component {
   }
 
   // Instance methods
-  updateStatus() {
-    console.log('updating status');
+  updateStatus(e) {
+    const forceRefresh = (e) ? true : false;
+
+    //set updating status
+    this.props.updateStatus(this.props.id, constants.status.UPDATING);
+
+    // fetch status
     StatusService.getStatus(this.props, (status) => {
       if(status) {
         this.props.updateStatus(this.props.id, status);
       }
-    });
+    }, forceRefresh);
   }
+
 
   sendEmailAlert() {
     console.log('sending email alert');
