@@ -1,4 +1,5 @@
 import { setCurrentLocale } from '../intl/actions';
+import { loadSites } from '../sites/actions';
 
 export const UPDATE_APP_STATE_FROM_STORAGE = 'UPDATE_APP_STATE_FROM_STORAGE';
 
@@ -6,6 +7,7 @@ export function updateAppStateFromStorage() {
   return ({ dispatch, engine }) => {
     const getPromise = async () => {
       const state = await engine.load();
+      dispatch(loadSites());
       if (state.intl && state.intl.currentLocale) {
         dispatch(setCurrentLocale(state.intl.currentLocale));
       } else if (process.env.IS_SERVERLESS) {

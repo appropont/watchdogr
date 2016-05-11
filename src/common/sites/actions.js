@@ -29,6 +29,7 @@ export function removeSite(id) {
 }
 
 export function saveSites(sites) {
+  console.log('save sites action: ', sites);
   return {
     type: SAVE_SITES,
     payload: { sites }
