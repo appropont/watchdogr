@@ -2,6 +2,8 @@ import * as actions from './actions';
 import Site from './site';
 import { Map, Record } from 'immutable';
 
+import Storage from '../storage/storage';
+
 const InitialState = Record({
   map: Map()
 });
@@ -47,17 +49,21 @@ export default function sitesReducer(state = initialState, action) {
       });
       console.log('map of raw sites: ', map);
       const array = map.toArray();
-      localStorage.sites = JSON.stringify(array);
+      //Storage.sites = JSON.stringify(array);
+      Storage.setItem('sites', JSON.stringify(array));
       return state;
     }
 
     case actions.LOAD_SITES: {
-      const loadedSites = localStorage.sites;
-      if(loadedSites) {
+      console.log('loading sites');
+      try {
+        const loadedSites = Storage.getItem(sites);
+        console.log('loadedSites: ', loadedSites);
         const sites = reviveSites(JSON.parse(loadedSites));
         console.log('sites in load sites: ', sites);
         return state.merge(sites);
-      } else {
+      } catch(e) {
+        console.log('loading sites failed');
         return state;
       }
     }
