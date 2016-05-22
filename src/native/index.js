@@ -1,7 +1,7 @@
 import 'react-native-browser-polyfill';
 import App from './app/AppPage.react';
 import Component from 'react-pure-render/component';
-import React, { AppRegistry, Platform } from 'react-native';
+import React, { AppRegistry, Platform, AsyncStorage } from 'react-native';
 import config from './config';
 import configureStore from '../common/configureStore';
 import createEngine from 'redux-storage-engine-reactnativeasyncstorage';
@@ -9,6 +9,10 @@ import messages from './messages';
 import { Provider } from 'react-redux';
 
 require('../server/intl/polyfillLocales')(self, config.locales);
+
+import Storage from '../common/storage/storage';
+
+Storage.setStorage(AsyncStorage);
 
 export default function index() {
   const initialState = {
