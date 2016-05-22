@@ -23,7 +23,7 @@ class SiteList extends Component {
 
   componentDidMount() {
     this.props.dispatch(loadSites());
-    //SettingsActions.loadSettings();
+    //this.props.dispatch(loadSettings());
   }
 
   componentWillUnmount() {

@@ -3,11 +3,6 @@ import './Site.scss';
 import React, { PropTypes } from 'react';
 import Component from 'react-pure-render/component';
 import Moment from 'moment';
-import Request from 'superagent';
-//import cx from 'classnames';
-
-import SiteActions, { setTimestamp } from '../../common/sites/actions';
-import SettingsActions from '../../common/settings/actions';
 
 import StatusConstants from '../../common/constants/status';
 import StatusService from '../../common/sites/statusService';
@@ -20,9 +15,7 @@ const constants = {
 export default class Site extends Component {
 
   static propTypes = {
-    //removeSite: PropTypes.func.isRequired,
     //site: PropTypes.object.isRequired,
-    setTimestamp: PropTypes.func.isRequired,
     updateStatus: PropTypes.func.isRequired,
     removeSite: PropTypes.func.isRequired
   };

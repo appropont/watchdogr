@@ -19,6 +19,8 @@ import no from 'react-intl/locale-data/no';
 import pt from 'react-intl/locale-data/pt';
 import ro from 'react-intl/locale-data/ro';
 
+import Storage from '../common/storage/storage';
+
 // bluebirdjs.com/docs/why-bluebird.html
 window.Promise = Bluebird;
 // Warnings are useful for user code, but annoying for third party libraries.
@@ -43,6 +45,23 @@ window.addEventListener('unhandledrejection', error => {
 
 // github.com/yahoo/react-intl/wiki/Upgrade-Guide#add-call-to-addlocaledata-in-browser
 [cs, de, es, en, fr, no, pt, ro].forEach(addLocaleData);
+
+
+// Custom Storage injection
+const promiseStorage = {
+  getItem: function(key) {
+    return new Promise(function(resolve, reject) {
+      resolve(localStorage.getItem(key));
+    });
+  },
+  setItem: function(key, value) {
+    return new Promise(function(resolve, reject) {
+      resolve(localStorage.setItem(key, value));
+    });
+  }
+};
+Storage.setStorage(promiseStorage);
+
 
 const store = configureStore({
   createEngine,
