@@ -48,6 +48,7 @@ export default class Site extends Component {
   }
 
   componentDidMount() {
+    console.log("MOUNTING SITE");
     this.updateStatus();
   }
 
@@ -60,11 +61,14 @@ export default class Site extends Component {
     const { site, updateStatus } = this.props;
     const forceRefresh = (e) ? true : false;
 
+    console.log("UPDATING STATUS: ", site);
+
     //set updating status
     updateStatus(site.id, constants.status.UPDATING);
 
     // fetch status
     StatusService.getStatus(site, (status) => {
+      console.log('status callback fired: ', status, site);
       if(status) {
         updateStatus(site.id, status);
       }
@@ -111,10 +115,14 @@ export default class Site extends Component {
     return (
       <View style={styles.container}>
         <Icon {...statusIconProps}></Icon>
-        <Text>{site.url}</Text>
-        <Text>Last checked: {timeago}</Text>
-        <Icon.Button name="refresh" ></Icon.Button>
-        <Icon.Button name="trash" ></Icon.Button>
+        <View style={{flexDirection: 'column'}}>
+          <Text>{site.url}</Text>
+          <Text>Last checked: {timeago}</Text>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <Icon.Button name="refresh" ></Icon.Button>
+          <Icon.Button name="trash" ></Icon.Button>
+        </View>
       </View>
     );
   }

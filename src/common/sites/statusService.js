@@ -11,7 +11,7 @@ class StatusService {
   timeouts = {}
 
   // Using a callback instead of a more advanced solution because this method will keep firing responses
-  getStatus(site, callback, forceRefresh) {
+  async getStatus(site, callback, forceRefresh) {
     console.log('getting status: ', site, callback);
 
     const now = Date.now();
@@ -32,7 +32,8 @@ class StatusService {
       }, timeRemaining);
       callback(false);
     } else {
-      Request('HEAD', site.url)
+      console.log('make request and update lastChecked');
+      await Request('GET', site.url)
         .end((err, result) => {
           //initiate new timeout
           console.log('creating new timeout');
